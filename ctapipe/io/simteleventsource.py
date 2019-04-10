@@ -24,9 +24,8 @@ __all__ = ['SimTelEventSource']
 class SimTelEventSource(EventSource):
     skip_calibration_events = Bool(True, help='Skip calibration events').tag(config=True)
 
-    def __init__(self, config=None, tool=None, **kwargs):
-        super().__init__(config=config, tool=tool, **kwargs)
-
+    def __init__(self, config=None, parent=None, **kwargs):
+        super().__init__(config=config, parent=parent, **kwargs)
         self.metadata['is_simulation'] = True
 
         # traitlets creates an empty set as default,
@@ -43,6 +42,7 @@ class SimTelEventSource(EventSource):
             self.file_.telescope_descriptions,
             self.file_.header
         )
+        self.start_pos = self.file_.tell()
 
     @staticmethod
     def prepare_subarray_info(telescope_descriptions, header):
@@ -130,6 +130,10 @@ class SimTelEventSource(EventSource):
         return is_eventio(file_path)
 
     def _generator(self):
+        if self.file_.tell() > self.start_pos:
+            self.file_._next_header_pos = 0
+            warnings.warn('Backseeking to start of file.')
+
         try:
             yield from self.__generator()
         except EOFError:

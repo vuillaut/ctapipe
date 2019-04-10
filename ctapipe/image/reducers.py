@@ -41,8 +41,8 @@ class DataVolumeReducer(Component):
 
     """
 
-    def __init__(self, config=None, tool=None, **kwargs):
-        super().__init__(config=config, tool=tool, **kwargs)
+    def __init__(self, config=None, parent=None, **kwargs):
+        super().__init__(config=config, parent=parent, **kwargs)
 
         self._nchan = None
         self._npix = None
@@ -55,8 +55,8 @@ class DataVolumeReducer(Component):
     @staticmethod
     def requires_neighbours():
         """
-        Method used for callers of the ChargeExtractor to know if the extractor
-        requires knowledge of the pixel neighbours
+        Method used for callers of the ImageExtractor to know if the
+        extractor requires knowledge of the pixel neighbours
 
         Returns
         -------
